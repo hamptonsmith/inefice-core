@@ -157,7 +157,7 @@ class SubscriberState {
     
     link(client, key) {
         this.keyToSubscribedClients.with(key).push(client);
-        this.clientsToSubscriptions.with(this.transport.id(client)).push(key);
+        this.clientsToSubscriptions.with(client).push(key);
     
         this.transport.send(client, {
             op: 'init',
@@ -196,11 +196,11 @@ function deserialize(s) {
 
 class MapOfLists {
     constructor() {
-        this.map = {};
+        this.map = new Map();
     }
     
     removeAll(key) {
-        delete this.map[key];
+        this.map.delete(key);
     }
     
     set(key, value) {
@@ -209,18 +209,18 @@ class MapOfLists {
         }
         
         if (value.length === 0) {
-            delete this.map[key];
+            this.map.delete(key);
         }
         else {
-            this.map[key] = value;
+            this.map.set(key, value);
         }
     }
     
     with(key) {
-        if (typeof this.map[key] === 'undefined') {
-            this.map[key] = [];
+        if (typeof this.map.get(key) === 'undefined') {
+            this.map.set(key, []);
         }
         
-        return this.map[key];
+        return this.map.get(key);
     }
 }
